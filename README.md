@@ -1,6 +1,6 @@
 <h1>APTP 2023 - {알록달록}</h1>
 <h6>Asterisk Programming Team Project 2023</h6>
-<h4>Team Members: 김지원 | 박유성 | 심민규 | 안지원 | </h4>
+<h4>Team Members: 김지원 | 박유성 | 심민규 | 안지원 | 김지환 </h4>
 
 <h2>1. 주제 </h2>
 사용자의 선호도에 기반한 시간표 제작 프로그램
