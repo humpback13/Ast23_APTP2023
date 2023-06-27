@@ -1,4 +1,5 @@
 from itertools import combinations
+from tkinter import *
 
 class Classes:
 
@@ -87,9 +88,12 @@ def makemax(availelist, num):    # 실제로 가능한 시간표 중에서 가�
         for j in range(num):
             vs += i[j].value
         valuesum.append(vs)
-
+    if len(valuesum) != 0:
+        v = max(valuesum)
+    else:
+        v = 0
     maxidx = [i for i, value in enumerate(valuesum) if value == max(valuesum)]
-    return maxidx
+    return maxidx, v
 
 def readtxt(filename):
 
@@ -106,49 +110,124 @@ def readtxt(filename):
     f.close()
     return classlist
 
-def writetxt(filename, maxidxlist, ava, num):
+def writetxt(filename, maxidxlist, ava, num, val):
 
     f = open(filename, 'w')
     if len(ava) == 0:
         f.write(f"There is no available schedule")
     for i in maxidxlist:
-        f.write(f"{i}\n")
+        f.write(f"sum of value : {val}\n")
+        f.write(f"position of max value : {i}\n")
     f.write("\n")
     for i in maxidxlist:
         for j in range(num):
             f.write(f"{ava[i][j].value}\t{ava[i][j].day}\t{ava[i][j].start}\t{ava[i][j].end}\t{ava[i][j].day2}\t"
                     f"{ava[i][j].start2}\t{ava[i][j].end2}\t{ava[i][j].kind} \t{ava[i][j].prof}\n")
-        f.write("\n")
+        f.write(f"\n")
     f.close()
+    return
 
-# for i in result:
-#     for j in range(num):
-#         printclass(i[j])
-#     print()
-# print()
-# print()
-# for i in availelist:
-#     for j in range(num):
-#         printclass(i[j])
-#     print()
 
-num = int(input("들을 강의의 개수 : "))
+root =Tk()
+root.geometry("1000x1400")
+root.title("알록달록시간표") #창 설정
+root.config(bg="light blue")
+
+img = PhotoImage(file = "C:/Users/erics/Desktop/APTP2023/Ast23_APTP2023/KakaoTalk_20230627_133139213.png")
+img.config(width=230, height=180)
+tl = Label(root)
+tl.config(image = img)
+tl2= Label(root)
+tl2.config(text="알록달록 시간표")
+tl2.config(width=20,height=3)
+tl2.config(bg="red")
+tl.grid(row=3, column=2)
+tl2.grid(row=1, column=2) #레이블
+num_var = IntVar()
+def submit():
+    input = ent1.get()
+    num_var.set(int(input))
+
+num = 6
+
+ent = Text(root) #root라는 창에 입력창 생성
+ent.config(width=30, height=20)
+ent.grid(row=4,column=1) #입력 강의
+
+
+ent1 = Entry(root)
+ent1.grid(row=2,column=2) #강의 수
+
+btn1 = Button(root)
+btn1.config(padx=20, pady=20)
+btn1.config(text = "들을 강의의 개수")
+btn1.config(fg="black", bg="orange") #fg - 글자색 , bg-배경색
+btn1.config(command=submit)
+btn1.grid(row=2,column=1) #버튼
+
+def save_to_file():
+    input_text= ent.get("1.0",END)
+    with open("lecture.txt","w") as file:
+        file.write(input_text)
+
+btn=Button(root)
+btn.config(text="입력")
+btn.config(command=save_to_file)
+btn.config(width=10, height=2)
+btn.config(bg="yellow")
+btn.grid(row=4,column=2)
+
 lst = readtxt("lecture.txt")
 lst.sort(key=lambda x: (x.end, x.start))
 
 result = makecomb(lst, num)
 availelist = makeavaile(result)
-maxidxlist = makemax(availelist, num)
+maxidxlist, val = makemax(availelist, num)
+
+writetxt('result.txt', maxidxlist, availelist, num, val)
+
+def load_from_file():
+    with open("result.txt","r") as file:
+        content = file.read()
+        ent3.delete("1.0",END)
+        ent3.insert(END,content)
+
+ent3 = Text(root)
+ent3.config(width=50,height=20)
+ent3.grid(row=4,column=4)
+
+btn2 = Button(root)
+btn2.config(text="시간표 보기")
+btn2.config(command=load_from_file)
+btn2.config(width=10,height=3)
+btn2.config(bg="green")
+btn2.grid(row=4,column=3)
+
+root.mainloop()
+
+
+
+
+#for i in result:
+#    for j in range(num):
+#        printclass(i[j])
+#    print()
+#print()
+#print()
+#for i in availelist:
+#    for j in range(num):
+#       printclass(i[j])
+#    print()
 
 if len(availelist) == 0:
-    print("There is no available schedule")
-# print()
-# print()
+    print("There is no available schedule\n")
+
+#print(f"{len(availelist)}\n")
+print(f"가중치 합 : {val}\n")
 for i in maxidxlist:
-    print(f"가중치 합 : {i}")
-print()
+    print(f"가중치 합이 최대인 시간표의 위치 : {i}\n")
+
 for j in maxidxlist:
     for i in range(num):
        printclass(availelist[j][i])
     print()
-writetxt('result.txt', maxidxlist, availelist, num)
